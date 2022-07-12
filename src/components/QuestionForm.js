@@ -1,5 +1,8 @@
 import React, {useState} from "react";
 
+import ErrorList from "./ErrorList";
+import _ from "lodash";
+
 const defaultQuestionForm = {
     question: "",
     answer: ""
@@ -7,11 +10,7 @@ const defaultQuestionForm = {
 
 const QuestionForm = (props) => {
     const [newQuestion, setNewQuestion] = useState(defaultQuestionForm)
-
-    const handleQuestionSubmit = (event) => {
-        event.preventDefault()
-        props.addNewQuestion(newQuestion)
-    }
+    const [errors, setErrors] = useState({})
 
     const handleInputChange = (event) => {
         setNewQuestion({
@@ -19,10 +18,35 @@ const QuestionForm = (props) => {
             [event.currentTarget.name]: event.currentTarget.value
         })
     }
+    
+    const validateQuestionForSubmit = () => {
+        let submitErrors = {}
+        const requiredFields = ["question", "answer"]
+        requiredFields.forEach(field => {
+            if (newQuestion[field].trim() === "") {
+                submitErrors = {
+                    ...submitErrors,
+                    [field]: "is blank"
+                }
+            }
+        })
+        setErrors(submitErrors)
+        return _.isEmpty(submitErrors)
+    }
 
-
+    const handleQuestionSubmit = (event) => {
+        event.preventDefault()
+        if (validateQuestionForSubmit()) {
+            props.addNewQuestion(newQuestion)
+            setNewQuestion(defaultQuestionForm)
+        }
+    }
+    
     return (
         <form onSubmit={handleQuestionSubmit}>
+            <ErrorList 
+                errors={errors}
+            />
             <label htmlFor="question">
                 Question:
                 <input name="question" id="question" type="text" onChange={handleInputChange}/>
