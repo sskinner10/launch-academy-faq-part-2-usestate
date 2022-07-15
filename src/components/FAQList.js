@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import Question from './Question';
 import QuestionForm from './QuestionForm';
 
-const FAQList = (props) => {
+const FAQList = () => {
   const [questions, setQuestions] = useState([])
   const [selectedQuestion, setSelectedQuestion] = useState([])
 
